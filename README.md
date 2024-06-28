@@ -25,7 +25,7 @@ Ensure you have Python 3.x installed on your system. You will also need to insta
 
 ## REQUIREMENTS:
 
-pip install paramiko
+pip install -r requirements.txt
 
 
 ## INSTALLING:
