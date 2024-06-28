@@ -39,8 +39,9 @@ cd qldTecSSH-Honeypot
 
 Run the honeypot with the following command:
 
-python main.py -a 0.0.0.0 -p 22 
-(You can Change 0.0.0.0 your the ip of your system and bind to any port)
+python main.py -a 0.0.0.0 -p 22
+
+(You can Change 0.0.0.0 to the ip of your system and bind to any port number)
 
 -a 0.0.0.0 specifies the address to bind to (all interfaces).
 -p 22 specifies the port to bind to (default SSH port).
