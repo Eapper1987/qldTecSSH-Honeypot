@@ -146,7 +146,7 @@ qldTecSSH-Honeypot
         ├── sales_forecast.xlsx
         └── sales_presentation.pptx
         
-Logging:
+## Logging:
 
 The honeypot logs all command executions and login attempts:
 
@@ -154,10 +154,10 @@ Command Executions: Logged in cmd_audits.log.
 Login Attempts: Logged in creds_audits.log.
 Alerts: Logged in alerts.log.
 
-Contributing:
+## Contributing:
 
 Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
-License:
+## License:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
