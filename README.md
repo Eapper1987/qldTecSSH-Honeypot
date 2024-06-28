@@ -8,6 +8,15 @@ A sophisticated SSH honeypot simulating a corporate environment to capture malic
 - Gradually slows down responses to trap attackers.
 - No password required for SSH login, making it easy for attackers to gain access while all activities are logged.
 
+## Potential Improvements
+There are several areas for potential improvement in this SSH honeypot:
+- Enhance the emulated shell commands with more realistic behaviors and responses.
+- Implement a more sophisticated tarpit style system to slow down interaction as the session progresses.
+- Explore adding additional fake files and directories to simulate a larger and more complex environment.
+
+These enhancements can improve the realism and effectiveness of the honeypot in capturing and analyzing malicious activities.
+
+
 ## Installation:
 
 Prerequisites:
