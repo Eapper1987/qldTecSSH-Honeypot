@@ -194,6 +194,19 @@ def process_command(command, channel, client_ip, server_instance):
                 response = b"\nInvalid echo command\r\n"
         except Exception as e:
             response = f"\nFailed to write to file: {e}\r\n".encode('utf-8')
+    elif command.startswith('append '):
+        try:
+            parts = command.split('>>')
+            if len(parts) == 2:
+                content, file_name = parts[0].strip(), parts[1].strip()
+                file_path = os.path.join(server_instance.current_directory, file_name)
+                with open(file_path, 'a') as f:
+                    f.write(content + "\n")
+                response = b"\n"
+            else:
+                response = b"\nInvalid append command\r\n"
+        except Exception as e:
+            response = f"\nFailed to append to file: {e}\r\n".encode('utf-8')
     elif command.startswith('cp '):
         try:
             parts = command[3:].split(' ')
@@ -323,6 +336,8 @@ def create_qld_tec_services_fs():
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "Legal"),
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations"),
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Documents", "passwords"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Documents", "secret"),
     ]
 
     # Create directories in the fake root directory
@@ -520,6 +535,13 @@ def create_qld_tec_services_fs():
 
     with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales", "meeting_schedule.txt"), "w") as f:
         f.write("Meeting Schedule:\n- Monday: Sales Team Meeting\n- Wednesday: Client Call\n- Friday: Weekly Review\n")
+
+    # Honey tokens (bait files)
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "passwords.txt"), "w") as f:
+        f.write("root:rootpassword\nadmin:adminpassword\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "secret_project.pdf"), "wb") as f:
+        f.write(b"%PDF-1.4\n%This is a dummy secret project file.\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser() 
