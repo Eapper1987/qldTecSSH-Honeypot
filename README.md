@@ -25,7 +25,7 @@ Ensure you have Python 3.x installed on your system. You will also need to insta
 
 ## REQUIREMENTS:
 
-pip install -r requirements.txt
+paramiko
 
 
 ## INSTALLING:
@@ -33,6 +33,8 @@ pip install -r requirements.txt
 git clone https://github.com/your-username/qldTecSSH-Honeypot.git
 
 cd qldTecSSH-Honeypot
+
+pip install -r requirements.txt
 
 
 ## Usage:
