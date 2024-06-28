@@ -8,29 +8,29 @@ A sophisticated SSH honeypot simulating a corporate environment to capture malic
 - Gradually slows down responses to trap attackers.
 - No password required for SSH login, making it easy for attackers to gain access while all activities are logged.
 
-## Installation
+## Installation:
 
 Prerequisites:
 Ensure you have Python 3.x installed on your system. You will also need to install the `paramiko` library if you haven't already:
 
-###REQUIREMENTS:
+## REQUIREMENTS:
 
 pip install paramiko
 
 
-###INSTALLING:
+## INSTALLING:
 
 git clone https://github.com/your-username/qldTecSSH-Honeypot.git
 
 cd qldTecSSH-Honeypot
 
-###Generating RSA Host Key:
+## Generating RSA Host Key:
 
 Before running the honeypot, you need to generate an RSA host key. If the host key file does not exist, the script will automatically generate one for you. However, you can generate it manually if you prefer:
 
 ssh-keygen -t rsa -b 2048 -f host_key_rsa
 
-###Usage:
+## Usage:
 
 Run the honeypot with the following command:
 
