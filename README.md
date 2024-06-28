@@ -10,35 +10,36 @@ A sophisticated SSH honeypot simulating a corporate environment to capture malic
 
 ## Installation
 
-### Prerequisites
+Prerequisites:
 Ensure you have Python 3.x installed on your system. You will also need to install the `paramiko` library if you haven't already:
 
-REQUIREMENTS:
+###REQUIREMENTS:
 
 pip install paramiko
-Clone the Repository
-Clone the repository to your local machine:
 
 
-INSTALLING:
+###INSTALLING:
 
 git clone https://github.com/your-username/qldTecSSH-Honeypot.git
+
 cd qldTecSSH-Honeypot
 
-Generating RSA Host Key:
+###Generating RSA Host Key:
+
 Before running the honeypot, you need to generate an RSA host key. If the host key file does not exist, the script will automatically generate one for you. However, you can generate it manually if you prefer:
 
 ssh-keygen -t rsa -b 2048 -f host_key_rsa
 
-Usage:
+###Usage:
 
 Run the honeypot with the following command:
 
 python main.py -a 0.0.0.0 -p 22
+
 -a 0.0.0.0 specifies the address to bind to (all interfaces).
 -p 22 specifies the port to bind to (default SSH port).
 
-Directory Structure
+## Directory Structure
 -------------------
 The honeypot creates a realistic corporate filesystem with multiple departments and detailed files. Here are some of the key directories and files:
 
