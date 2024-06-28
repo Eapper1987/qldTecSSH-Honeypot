@@ -1,16 +1,19 @@
 import os
 import logging
-from logging.handlers import RotatingFileHandler
 import paramiko
 import threading
 import socket
 import argparse
+import time
+from logging.handlers import RotatingFileHandler
 
 # Constants
 SSH_BANNER = "SSH-2.0-qldTecServices_1.0"
 FAKE_ROOT = "/tmp/fake_qld_tec_services"
 USER_HOME = os.path.join(FAKE_ROOT, "home", "admin")
-SECRET_FILE_PATH = os.path.join(FAKE_ROOT, "home", "admin", "Documents", "Projects", "2024", "hidden", "secret_key.txt")
+INITIAL_DELAY = 0.5
+DELAY_INCREMENT = 0.1
+MAX_DELAY = 5.0
 
 # Logging Format
 logging_format = logging.Formatter('%(asctime)s %(message)s')
@@ -51,6 +54,7 @@ class Server(paramiko.ServerInterface):
         self.event = threading.Event()
         self.client_ip = client_ip
         self.current_directory = FAKE_ROOT  # Start at the fake root directory initially
+        self.delay = INITIAL_DELAY
 
     def check_channel_request(self, kind, chanid):
         if kind == 'session':
@@ -104,6 +108,8 @@ def emulated_shell(channel, client_ip, server_instance):
 
 def process_command(command, channel, client_ip, server_instance):
     response = b""
+    time.sleep(server_instance.delay)
+    server_instance.delay = min(server_instance.delay + DELAY_INCREMENT, MAX_DELAY)
 
     if command == 'exit':
         response = b"\n Goodbye!\n"
@@ -143,18 +149,14 @@ def process_command(command, channel, client_ip, server_instance):
                 response = b"\nDirectory not found\r\n"
     elif command.startswith('cat '):
         file_path = os.path.join(server_instance.current_directory, command[4:])
-        if file_path == SECRET_FILE_PATH:
-            response = b"\nYOU have found the secret key LOL NOT, ITS A HONEY_POT BITCH\r\n"
-            funnel_logger.info(f'Secret file accessed by {client_ip}')
-        else:
-            try:
-                with open(file_path, "rb") as f:
-                    file_content = f.read()
-                    response = b"\n" + file_content + b"\r\n"
-            except FileNotFoundError:
-                response = b"\nFile not found\r\n"
-            except IsADirectoryError:
-                response = b"\nIs a directory\r\n"
+        try:
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+                response = b"\n" + file_content + b"\r\n"
+        except FileNotFoundError:
+            response = b"\nFile not found\r\n"
+        except IsADirectoryError:
+            response = b"\nIs a directory\r\n"
     elif command.startswith('mkdir '):
         try:
             dir_name = command[6:]
@@ -226,7 +228,7 @@ def process_command(command, channel, client_ip, server_instance):
     funnel_logger.info(f'{client_ip} executed command: {command}, response: {response.strip().decode()}')
     channel.send(response)
 
-def client_handle(client, addr, username, password, server_instance):
+def client_handle(client, addr, server_instance):
     client_ip = addr[0]
     print(f"{client_ip} connected to server.")
     try:
@@ -269,7 +271,7 @@ def honeypot(address, port):
     while True: 
         try:
             client, addr = socks.accept()
-            threading.Thread(target=client_handle, args=(client, addr, None, None, None)).start()
+            threading.Thread(target=client_handle, args=(client, addr, None)).start()
         except Exception as error:
             print("!!! Exception - Could not open new client connection !!!")
             print(error)
@@ -317,6 +319,10 @@ def create_qld_tec_services_fs():
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "HR"),
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "Engineering"),
         os.path.join(FAKE_ROOT, "home", "admin", "Work", "Marketing"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Work", "IT"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Work", "Legal"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations"),
+        os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales"),
     ]
 
     # Create directories in the fake root directory
@@ -393,6 +399,9 @@ def create_qld_tec_services_fs():
     with open(os.path.join(FAKE_ROOT, "var", "log", "auth.log"), "w") as f:
         f.write("Jun 10 06:25:01 qldTecServices sshd[1298]: Accepted password for admin from 192.168.1.100 port 22 ssh2\n")
 
+    with open(os.path.join(FAKE_ROOT, "var", "log", "messages"), "w") as f:
+        f.write("Jun 10 06:25:01 qldTecServices systemd[1]: Started Session 1 of user admin.\n")
+
     with open(os.path.join(FAKE_ROOT, "var", "www", "html", "index.html"), "w") as f:
         f.write("<html><body><h1>Welcome to QLD Tech Services</h1></body></html>\n")
 
@@ -465,6 +474,52 @@ def create_qld_tec_services_fs():
 
     with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Marketing", "advertising_budget.xlsx"), "w") as f:
         f.write("Platform,Budget,Spent\nGoogle Ads,10000,8000\nFacebook Ads,5000,4000\n")
+
+    # IT Department Files
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "IT", "network_config.txt"), "w") as f:
+        f.write("Interface: eth0\nIP: 192.168.1.100\nNetmask: 255.255.255.0\nGateway: 192.168.1.1\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "IT", "server_maintenance_schedule.txt"), "w") as f:
+        f.write("Date: 2024-06-01\nTask: Update server software\nDate: 2024-06-15\nTask: Backup server data\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "IT", "software_inventory.xlsx"), "w") as f:
+        f.write("Software,Version,License\nApache,2.4,Open Source\nMySQL,8.0,Open Source\nPython,3.9,Open Source\n")
+
+    # Legal Department Files
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Legal", "contracts.txt"), "w") as f:
+        f.write("Contract 1: NDA Agreement\nContract 2: Employment Agreement\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Legal", "compliance_report.pdf"), "wb") as f:
+        f.write(b"%PDF-1.4\n%This is a dummy compliance report.\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Legal", "privacy_policy.docx"), "w") as f:
+        f.write("This is a dummy privacy policy document.\n")
+
+    # Operations Department Files
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations", "operations_manual.pdf"), "wb") as f:
+        f.write(b"%PDF-1.4\n%This is a dummy operations manual.\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations", "maintenance_schedule.xlsx"), "w") as f:
+        f.write("Date,Task,Status\n2024-06-01,Check HVAC,Completed\n2024-06-10,Inspect fire extinguishers,Pending\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations", "safety_procedures.txt"), "w") as f:
+        f.write("Safety Procedures:\n- Wear protective gear\n- Follow safety signs\n- Report accidents immediately\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Operations", "inventory_list.csv"), "w") as f:
+        f.write("Item,Quantity,Location\nPrinter Paper,500,Storage Room\nLaptops,20,Office\nProjectors,5,Conference Room\n")
+
+    # Sales Department Files
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales", "sales_forecast.xlsx"), "w") as f:
+        f.write("Month,Projected Sales,Actual Sales\nJanuary,50000,45000\nFebruary,60000,55000\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales", "client_list.csv"), "w") as f:
+        f.write("Client Name,Contact,Revenue\nABC Corp,John Doe,10000\nXYZ Inc,Jane Smith,20000\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales", "sales_presentation.pptx"), "wb") as f:
+        f.write(b"This is a dummy sales presentation.\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Work", "Sales", "meeting_schedule.txt"), "w") as f:
+        f.write("Meeting Schedule:\n- Monday: Sales Team Meeting\n- Wednesday: Client Call\n- Friday: Weekly Review\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser() 
