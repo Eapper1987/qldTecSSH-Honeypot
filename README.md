@@ -153,6 +153,14 @@ Command Executions: Logged in cmd_audits.log.
 Login Attempts: Logged in creds_audits.log.
 Alerts: Logged in alerts.log.
 
+## Monitoring and Security:
+
+Monitor the honeypot logs regularly for any suspicious activity. Since running a honeypot involves risks of unauthorized access attempts, consider firewall rules and other security measures to limit exposure.
+
+## Cloud Provider Considerations:
+
+If using Linode or another cloud provider, review their security recommendations and ensure you configure firewall rules and access controls appropriately to mitigate risks.
+
 ## Contributing:
 
 Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
