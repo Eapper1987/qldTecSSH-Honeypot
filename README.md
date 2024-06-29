@@ -3,32 +3,54 @@
 A sophisticated SSH honeypot simulating a corporate environment to capture malicious activities and interactions.
 
 ## Features
-- Simulates a real corporate filesystem with multiple departments and realistic files.
-- Logs all command executions and login attempts.
-- Gradually slows down responses to trap attackers.
-- No password required for SSH login, making it easy for attackers to gain access while all activities are logged.
+
+### Corporate Filesystem Simulation
+
+- **Realistic Filesystem:** Simulates a corporate environment with multiple departments and realistic files to enhance the authenticity of the honeypot.
+
+### Command and Login Logging
+
+- **Comprehensive Logging:** Logs all command executions and login attempts, allowing detailed analysis of attacker behavior.
+
+- **Log Files:**
+- 
+  - `cmd_audits.log`: Records all commands executed by the attacker.
+  - 
+  - `creds_audits.log`: Records all login attempts and credentials used.
+  - 
+  - `alerts.log`: Records access to sensitive files and execution of bait scripts.
+
+### Tarpit Feature
+
+- **Gradual Response Slowdown:** Gradually slows down responses to trap attackers, making their interactions more time-consuming and frustrating.
+
+### No Password Requirement
+
+- **Easy Access:** No password required for SSH login, making it easy for attackers to gain access while all activities are monitored and logged.
+
+### Fake Malware Simulation
+
+- **Bait Files and Scripts:** Includes fake files and scripts such as `passwords.txt` and `run_me.sh` that, when accessed or executed, simulate malware actions like log deletion, file encryption, and
+data exfiltration.
+- 
+- **Alert Mechanism:** Accessing these bait files triggers alerts and logs the event.
+
+### Raining Characters Effect
+
+- **Visual Disruption:** Implements a "raining characters" effect that mimics terminal corruption, adding to the deception and confusion of the attacker.
 
 ## Potential Improvements
+
 There are several areas for potential improvement in this SSH honeypot:
-- Enhance the emulated shell commands with more realistic behaviors and responses.
-- Implement a more sophisticated tarpit style system to slow down interaction as the session progresses.
-- Explore adding additional fake files and directories to simulate a larger and more complex environment.
 
-These enhancements can improve the realism and effectiveness of the honeypot in capturing and analyzing malicious activities.
+- **Enhanced Shell Command Emulation:** Improve the realism of the emulated shell commands and their responses.
+- 
+- **Sophisticated Tarpit Mechanism:** Develop a more advanced tarpit system that dynamically adjusts interaction delays.
+- 
+- **Expanded Filesystem Simulation:** Add more fake files and directories to simulate a larger and more complex corporate environment.
+- 
 
-
-## Installation:
-
-Prerequisites:
-Ensure you have Python 3.x installed on your system. You will also need to install the `paramiko` library if you haven't already:
-
-
-## REQUIREMENTS:
-
-paramiko
-
-
-## INSTALLING:
+## Installation
 
 git clone https://github.com/your-username/qldTecSSH-Honeypot.git
 
