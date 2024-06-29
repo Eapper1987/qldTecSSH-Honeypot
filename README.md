@@ -71,9 +71,15 @@ python main.py -a 0.0.0.0 -p 22
 -p 22 specifies the port to bind to (default SSH port).
 
 
-## Directory Structure
--------------------
+## Directory Structure:
+
 The honeypot creates a realistic corporate filesystem with multiple departments and detailed files. Here are some of the key directories and files:
+
+home/admin: Contains user-specific files and directories.
+
+home/admin/Documents: Contains various project documents, reports, and personal files.
+
+var/log: Contains system logs to mimic a real server environment.
 
         
 ## Logging:
