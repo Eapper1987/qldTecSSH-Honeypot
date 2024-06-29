@@ -5,6 +5,8 @@ import threading
 import socket
 import argparse
 import time
+import random
+import string
 from logging.handlers import RotatingFileHandler
 
 # Constants
@@ -149,14 +151,25 @@ def process_command(command, channel, client_ip, server_instance):
                 response = b"\nDirectory not found\r\n"
     elif command.startswith('cat '):
         file_path = os.path.join(server_instance.current_directory, command[4:])
-        try:
-            with open(file_path, "rb") as f:
-                file_content = f.read()
-                response = b"\n" + file_content + b"\r\n"
-        except FileNotFoundError:
-            response = b"\nFile not found\r\n"
-        except IsADirectoryError:
-            response = b"\nIs a directory\r\n"
+        if "passwords.txt" in file_path or "secret_project.pdf" in file_path:
+            alert_logger.warning(f'{client_ip} accessed bait file: {file_path}')
+            simulate_malware(channel, client_ip, "log_deletion")
+            response = b"Unauthorized access detected! Logging out...\n"
+            channel.send(response)
+            channel.close()
+        elif "run_me.sh" in file_path or "secret_document.sh" in file_path or "hidden_script.sh" in file_path or "confidential_data.sh" in file_path:
+            alert_logger.warning(f'{client_ip} executed a bait script: {file_path}')
+            simulate_malware(channel, client_ip, "full")
+            response = b"\nMalware has been executed.\n"
+        else:
+            try:
+                with open(file_path, "rb") as f:
+                    file_content = f.read()
+                    response = b"\n" + file_content + b"\r\n"
+            except FileNotFoundError:
+                response = b"\nFile not found\r\n"
+            except IsADirectoryError:
+                response = b"\nIs a directory\r\n"
     elif command.startswith('mkdir '):
         try:
             dir_name = command[6:]
@@ -240,6 +253,43 @@ def process_command(command, channel, client_ip, server_instance):
 
     funnel_logger.info(f'{client_ip} executed command: {command}, response: {response.strip().decode()}')
     channel.send(response)
+
+def simulate_malware(channel, client_ip, type):
+    if type == "log_deletion":
+        response = b"Deleting system logs...\n"
+        funnel_logger.info(f'{client_ip} simulated malware: log deletion.')
+        channel.send(response)
+        time.sleep(2)
+        response = b"System logs deleted.\n"
+        channel.send(response)
+    elif type == "full":
+        response = b"Starting Malware...\n"
+        funnel_logger.info(f'{client_ip} executed simulated malware.')
+        channel.send(response)
+        # Simulate different malware behaviors
+        response = b"Encrypting files...\n"
+        channel.send(response)
+        time.sleep(2)
+        response = b"Deleting system logs...\n"
+        channel.send(response)
+        time.sleep(2)
+        response = b"Exfiltrating data...\n"
+        channel.send(response)
+        time.sleep(2)
+        response = b"Malware actions complete. Initiating terminal corruption...\n"
+        channel.send(response)
+        rain_characters(channel)
+        response = b"\nSession terminated.\n"
+        channel.send(response)
+        channel.close()
+
+def rain_characters(channel):
+    duration = 10  # Duration for the raining effect in seconds
+    end_time = time.time() + duration
+    while time.time() < end_time:
+        line = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=80)) + "\n"
+        channel.send(line.encode('utf-8'))
+        time.sleep(0.1)
 
 def client_handle(client, addr, server_instance):
     client_ip = addr[0]
@@ -541,7 +591,24 @@ def create_qld_tec_services_fs():
         f.write("root:rootpassword\nadmin:adminpassword\n")
 
     with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "secret_project.pdf"), "wb") as f:
-        f.write(b"%PDF-1.4\n%This is a dummy secret project file.\n")
+        f.write(b"%PDF-1.4\n%You executed a bait script.\n")
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "run_me.sh"), "w") as f:
+        f.write("#!/bin/bash\n\necho 'You executed a bait script!'\n")
+        os.chmod(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "run_me.sh"), 0o755)
+
+    # Additional executable bait files
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "secret_document.sh"), "w") as f:
+        f.write("#!/bin/bash\n\necho 'You executed the secret document!'\n")
+        os.chmod(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "secret_document.sh"), 0o755)
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "hidden_script.sh"), "w") as f:
+        f.write("#!/bin/bash\n\necho 'You executed the hidden script!'\n")
+        os.chmod(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "hidden_script.sh"), 0o755)
+
+    with open(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "confidential_data.sh"), "w") as f:
+        f.write("#!/bin/bash\n\necho 'You executed the confidential data script!'\n")
+        os.chmod(os.path.join(FAKE_ROOT, "home", "admin", "Documents", "confidential_data.sh"), 0o755)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser() 
